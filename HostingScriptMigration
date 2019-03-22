@@ -1,0 +1,32 @@
+$root = "H:\Home"
+$hashset = New-Object System.Collections.Generic.HashSet[string]
+foreach ( $domain in import-csv C:\Users\martin.strnad\Documents\domains.txt -Header domain) {
+    [void] $hashset.Add($domain.domain);
+}
+
+
+
+foreach ($ffff in Get-ChildItem -Path $root  | Where-Object { $_.PSIsContainer }) {
+
+    $webs = "{0}\\Webs" -f $ffff.Fullname
+    
+    foreach ($ddd in Get-ChildItem -Path $webs | Where-Object { $_.PSIsContainer }) {
+    
+        if ($hashset.Contains($ddd.Name )){        
+        
+            $php = Get-ChildItem -Path $ddd.Fullname -recurse | Where-Object { $_.Extension -eq ".php"} | Measure-Object 
+            $allfiles = Get-ChildItem -Path $ddd.Fullname -recurse | Where-Object {  -not $_.PSIsContainer } | Measure-Object
+            
+             "{0} {1} {2}" -f  $ddd.Name,$php.Count,$allfiles.Count
+            
+#            if ( $allfiles.Count -gt  0) {
+#                if ($php.Count -eq 0){
+#                    echo $ddd.Name  $php.Count   $allfiles.Count
+#                }
+#            }
+        }else {
+            #echo  $ddd.Name  "NOT"
+        }
+    }
+        
+}
